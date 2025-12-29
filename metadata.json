@@ -1,0 +1,7 @@
+{
+  "name": "Copy of Birdy - Digital Bill Wallet",
+  "description": "A high-end bill management app with an Apple Wallet-style interface, featuring digital receipts, unique Birdy IDs for paperless transactions, and AI-powered receipt generation and editing.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
