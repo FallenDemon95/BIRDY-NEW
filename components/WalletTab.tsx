@@ -28,7 +28,7 @@ const WalletCard: React.FC<{
   const handleAction = async (e: React.MouseEvent, type: 'return' | 'exchange') => {
     e.stopPropagation();
     if (!isWindowOpen) {
-      alert("This request is no longer available as the window has closed.");
+      alert("This window is closed.");
       return;
     }
     setLoading(true);
@@ -45,136 +45,124 @@ const WalletCard: React.FC<{
   return (
     <div 
       onClick={() => onExpand(isExpanded ? null : bill.id)}
-      className={`relative w-full rounded-[2.8rem] p-7 transition-all duration-500 cubic-bezier(0.16, 1, 0.3, 1) cursor-pointer wallet-card-shadow ${bill.color} border border-white/10 overflow-hidden 
-        ${isExpanded ? 'z-[100] scale-[1.04] mb-12' : 'z-[10] mb-[-100px] hover:translate-y-[-12px]'} 
-        ${isDimmed && !isExpanded ? 'opacity-30 blur-[1px]' : 'opacity-100'}`}
+      className={`relative w-full rounded-[2.5rem] p-6 card-stack-transition cursor-pointer wallet-card-shadow ${bill.color} border border-white/10 overflow-hidden 
+        ${isExpanded ? 'z-[100] scale-[1.02] mb-10' : 'z-[10] mb-[-120px] active:scale-[0.98]'} 
+        ${isDimmed && !isExpanded ? 'opacity-20 blur-[2px]' : 'opacity-100'}`}
       style={{
         transform: !isExpanded ? `translateY(0) scale(${1 - (index * 0.01)})` : 'translateY(0) scale(1)',
-        marginTop: isExpanded ? '20px' : '0',
+        marginTop: isExpanded ? '10px' : '0',
       }}
     >
-      {/* Labels / Badges */}
+      {/* Dynamic Status Badges */}
       {!isExpanded && (
-        <div className="absolute top-5 right-8 flex gap-2">
+        <div className="absolute top-5 right-6 flex flex-col items-end gap-1.5">
           {bill.isOnlineOrder && (
-            <div className="bg-blue-600/90 text-white px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5 shadow-lg backdrop-blur-md">
-              <svg className="w-2.5 h-2.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
-              Synced
-            </div>
+            <div className="bg-blue-600/90 text-[7px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md backdrop-blur-sm">ONLINE</div>
           )}
-          <div className={`${isWindowOpen ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-red-500'} text-white px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5`}>
-            <div className={`w-1 h-1 bg-white rounded-full ${isWindowOpen ? 'animate-ping' : ''}`}></div>
-            {isWindowOpen ? 'Return Window' : 'Closed'}
+          <div className={`${isWindowOpen ? 'bg-emerald-500' : 'bg-red-500'} text-white px-2 py-0.5 rounded-md text-[7px] font-black uppercase tracking-widest`}>
+            {isWindowOpen ? 'Open' : 'Closed'}
           </div>
         </div>
       )}
 
-      {/* Header */}
-      <div className="flex justify-between items-start mb-10 pt-2">
+      {/* Card Header */}
+      <div className="flex justify-between items-start mb-12">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-[1.4rem] bg-white/10 flex items-center justify-center text-3xl font-black backdrop-blur-2xl border border-white/20">
+          <div className="w-14 h-14 rounded-2xl bg-white/10 flex items-center justify-center text-2xl font-black backdrop-blur-xl border border-white/10">
             {bill.icon}
           </div>
           <div>
-            <h3 className="font-bold text-2xl leading-none mb-1.5">{bill.merchant}</h3>
-            <p className="text-white/40 text-[10px] uppercase font-black tracking-[0.2em]">{bill.date}</p>
+            <h3 className="font-black text-xl leading-none mb-1 tracking-tight">{bill.merchant}</h3>
+            <p className="text-white/30 text-[9px] uppercase font-black tracking-widest">{bill.date}</p>
           </div>
         </div>
-        <div className="text-right pt-2">
-          <p className="font-black text-3xl tracking-tighter leading-none mb-1.5">₹{bill.amount.toLocaleString('en-IN')}</p>
-          <span className="text-[9px] font-black uppercase bg-black/30 px-3 py-1 rounded-full text-white/60 border border-white/10">{bill.category}</span>
+        <div className="text-right">
+          <p className="font-black text-2xl tracking-tighter leading-none mb-1">₹{Math.round(bill.amount).toLocaleString('en-IN')}</p>
+          <span className="text-[8px] font-black uppercase text-white/40 tracking-widest">{bill.category}</span>
         </div>
       </div>
 
       {isExpanded && (
-        <div className="mt-6 animate-fadeIn space-y-8">
-          {/* Online Info Section */}
+        <div className="mt-4 animate-fadeIn space-y-6">
+          {/* Tracking Status for Online Orders */}
           {bill.isOnlineOrder && (
-            <div className="bg-blue-600/10 border border-blue-500/20 p-6 rounded-[2rem] space-y-4">
-              <div className="flex justify-between items-center">
-                <span className="text-[10px] font-black uppercase text-blue-400 tracking-widest">Order Sync Tracking</span>
-                <span className="text-[10px] font-bold text-white/40 font-mono">{bill.trackingId || 'AUTO-SYNC'}</span>
+            <div className="bg-white/5 border border-white/5 rounded-3xl p-5">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[9px] font-black uppercase text-blue-400">Order Progress</span>
+                <span className="text-[9px] font-bold text-white/30">{bill.orderStatus}</span>
               </div>
-              <div className="relative h-1.5 w-full bg-white/10 rounded-full overflow-hidden">
+              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                 <div 
-                  className="absolute left-0 top-0 h-full bg-blue-500 transition-all duration-1000" 
-                  style={{ width: bill.orderStatus === 'Shipped' ? '40%' : bill.orderStatus === 'Delivered' ? '100%' : '70%' }}
+                  className="h-full bg-blue-500" 
+                  style={{ width: bill.orderStatus === 'Delivered' ? '100%' : '60%' }}
                 ></div>
-              </div>
-              <div className="flex justify-between text-[10px] font-black uppercase text-white/20">
-                <span>Ordered</span>
-                <span className={bill.orderStatus === 'Delivered' ? 'text-blue-400' : ''}>Delivered</span>
               </div>
             </div>
           )}
 
-          {/* Policy Display */}
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-black/30 p-5 rounded-3xl border border-white/5 flex flex-col items-center">
-              <span className="text-[8px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">Policy Clock</span>
-              <div className="flex flex-col items-center">
-                <span className={`text-sm font-black ${isWindowOpen ? 'text-emerald-400' : 'text-red-400'}`}>
-                  {isWindowOpen ? 'WINDOW OPEN' : 'CLOSED'}
-                </span>
-                <span className="text-[9px] text-white/40 font-bold">{daysLeft} Days Left</span>
-              </div>
+          {/* Quick Metrics */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="bg-black/20 p-4 rounded-[1.8rem] text-center border border-white/5">
+              <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em] mb-1 block">Return Window</span>
+              <span className={`text-xs font-black ${isWindowOpen ? 'text-emerald-400' : 'text-red-400'}`}>
+                {isWindowOpen ? `${daysLeft} DAYS LEFT` : 'CLOSED'}
+              </span>
             </div>
-            <div className="bg-black/30 p-5 rounded-3xl border border-white/5 flex flex-col items-center">
-              <span className="text-[8px] font-black text-white/30 uppercase tracking-[0.3em] mb-2">Eco-Impact</span>
-              <div className="flex flex-col items-center">
-                <span className="text-sm font-black text-emerald-400">
-                  +2 POINTS
-                </span>
-                <span className="text-[9px] text-white/40 font-bold">Paperless Sync</span>
-              </div>
+            <div className="bg-black/20 p-4 rounded-[1.8rem] text-center border border-white/5">
+              <span className="text-[7px] font-black text-white/30 uppercase tracking-[0.2em] mb-1 block">Reward Points</span>
+              <span className="text-xs font-black text-amber-400">+12 BIRDY</span>
             </div>
           </div>
 
-          {/* Receipt View */}
-          <div className="bg-black/40 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white/10 shadow-inner">
-            <div className="flex justify-between items-center mb-6">
-               <h4 className="text-[11px] font-black text-white/30 uppercase tracking-[0.4em]">Inventory</h4>
-               {bill.isOnlineOrder && <span className="bg-blue-500/20 text-blue-400 text-[8px] px-2 py-1 rounded-md font-black">E-RECEIPT</span>}
+          {/* Item List */}
+          <div className="bg-black/30 rounded-[2rem] p-6 border border-white/5">
+            <h4 className="text-[9px] font-black text-white/20 uppercase tracking-[0.3em] mb-4">Line Items</h4>
+            <div className="space-y-3">
+              {bill.items.map((item, i) => (
+                <div key={i} className="flex justify-between items-center">
+                  <span className="text-white/70 font-medium text-sm">{item.name}</span>
+                  <span className="text-white font-black text-sm">₹{item.price.toLocaleString('en-IN')}</span>
+                </div>
+              ))}
             </div>
-            {bill.items.length > 0 ? bill.items.map((item, i) => (
-              <div key={i} className="flex justify-between items-center mb-4 last:mb-0">
-                <span className="text-white/70 font-bold text-base">{item.name}</span>
-                <span className="text-white font-black tracking-tight">₹{item.price.toLocaleString('en-IN')}</span>
+            <div className="mt-5 pt-5 border-t border-white/5 flex justify-between items-end">
+              <div>
+                <p className="text-[8px] font-black uppercase text-white/20 mb-1">Total Due</p>
+                <span className="text-3xl font-black tracking-tighter">₹{bill.amount.toLocaleString('en-IN')}</span>
               </div>
-            )) : (
-              <p className="text-white/20 text-center py-4 font-bold text-xs">Extraction in progress...</p>
-            )}
-            <div className="pt-6 border-t border-white/10 mt-6">
-                <p className="text-[10px] font-black uppercase text-white/20 tracking-widest mb-1">Total Billing</p>
-                <span className="text-4xl font-black tracking-tighter">₹{bill.amount.toLocaleString('en-IN')}</span>
+              <img 
+                src={`https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=BIRDY-${bill.id}`} 
+                className="w-14 h-14 rounded-lg bg-white p-1"
+                alt="QR"
+              />
             </div>
           </div>
 
-          <div className="flex gap-4">
+          {/* Mobile-Optimized Action Buttons */}
+          <div className="flex flex-col gap-3">
+            <div className="flex gap-3">
+              <button 
+                onClick={(e) => handleAction(e, 'return')}
+                disabled={!isWindowOpen || loading}
+                className={`flex-1 py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all ${isWindowOpen ? 'bg-white/10 text-white border border-white/10' : 'bg-black/20 text-white/20 border border-transparent'}`}
+              >
+                Return Item
+              </button>
+              <button 
+                onClick={(e) => handleAction(e, 'exchange')}
+                disabled={!isWindowOpen || loading}
+                className={`flex-1 py-5 rounded-[1.5rem] font-black text-[10px] uppercase tracking-widest transition-all ${isWindowOpen ? 'bg-blue-600 text-white shadow-lg shadow-blue-600/20' : 'bg-black/20 text-white/20 border border-transparent'}`}
+              >
+                Exchange
+              </button>
+            </div>
             <button 
-              onClick={(e) => handleAction(e, 'return')}
-              disabled={loading || !isWindowOpen}
-              className={`flex-1 py-5 rounded-[1.8rem] font-black text-xs uppercase tracking-[0.2em] transition-all border border-white/10 active:scale-95 
-                ${isWindowOpen ? 'bg-white/10 text-white hover:bg-white/20' : 'bg-zinc-900 text-white/20 cursor-not-allowed'}`}
+              onClick={(e) => { e.stopPropagation(); onExpand(null); }}
+              className="w-full py-4 text-white/20 font-black text-[9px] uppercase tracking-widest hover:text-white/40"
             >
-              Return Portal
-            </button>
-            <button 
-              onClick={(e) => handleAction(e, 'exchange')}
-              disabled={loading || !isWindowOpen}
-              className={`flex-1 py-5 rounded-[1.8rem] font-black text-xs uppercase tracking-[0.2em] transition-all active:scale-95
-                ${isWindowOpen ? 'bg-blue-600 text-white shadow-2xl shadow-blue-600/40 hover:bg-blue-500' : 'bg-zinc-900 text-white/20 cursor-not-allowed'}`}
-            >
-              Exchange
+              Close Receipt
             </button>
           </div>
-
-          <button 
-            onClick={(e) => { e.stopPropagation(); onExpand(null); }}
-            className="w-full text-center text-white/20 text-[11px] font-black uppercase tracking-[0.4em] py-6 hover:text-white/40 transition-colors"
-          >
-            Collapse Wallet
-          </button>
         </div>
       )}
     </div>
@@ -198,37 +186,29 @@ export const WalletTab: React.FC<{ setActiveTab: (tab: TabType) => void }> = ({ 
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] gap-8">
-        <div className="w-20 h-20 bg-blue-600/20 rounded-full flex items-center justify-center">
-           <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
-        </div>
-        <div className="text-center">
-          <p className="text-white/40 font-black uppercase tracking-[0.4em] text-[10px] mb-2">Securing your vault</p>
-          <p className="text-white/10 font-bold text-[8px] uppercase tracking-widest">Connected to Birdy Sync v2.0</p>
-        </div>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-[10px] font-black text-white/30 uppercase tracking-[0.3em]">Loading Ledger</p>
       </div>
     );
   }
 
   return (
-    <div className="px-6 pt-6 pb-64 relative">
-      <div className="flex justify-between items-end mb-16 px-2">
+    <div className="px-6 pt-8 pb-32">
+      <div className="flex justify-between items-center mb-10">
         <div>
-          <h1 className="text-6xl font-black tracking-tighter mb-2">Wallet</h1>
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 bg-blue-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(59,130,246,0.5)]"></span>
-            <p className="text-white/30 text-[10px] font-black uppercase tracking-[0.3em] leading-none">Smart Ledger</p>
-          </div>
+          <h1 className="text-4xl font-black tracking-tighter">My Wallet</h1>
+          <p className="text-white/30 text-[9px] font-black uppercase tracking-widest mt-1">Smart Digital Invoices</p>
         </div>
         <button 
           onClick={() => setActiveTab('id')}
-          className="w-14 h-14 bg-zinc-900 rounded-[1.4rem] flex items-center justify-center border border-white/10 hover:bg-zinc-800 transition-all active:scale-90 shadow-2xl"
+          className="w-12 h-12 bg-white/5 rounded-2xl flex items-center justify-center border border-white/10 active:scale-90 transition-transform"
         >
-          <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M12 4v16m8-8H4"></path></svg>
         </button>
       </div>
       
-      <div className={`relative flex flex-col ${expandedId ? 'gap-0' : 'pb-40'}`}>
+      <div className="flex flex-col">
         {bills.map((bill, index) => (
           <WalletCard 
             key={bill.id} 
@@ -240,11 +220,10 @@ export const WalletTab: React.FC<{ setActiveTab: (tab: TabType) => void }> = ({ 
           />
         ))}
       </div>
-      
+
       {!expandedId && (
-        <div className="mt-20 text-center opacity-20">
-          <p className="text-white text-[11px] font-black uppercase tracking-[0.5em] mb-4">India's Smart Ledger</p>
-          <div className="w-1 h-12 bg-gradient-to-b from-white to-transparent mx-auto rounded-full"></div>
+        <div className="mt-24 text-center">
+          <p className="text-white/10 text-[9px] font-black uppercase tracking-[0.5em]">India's Paperless Future</p>
         </div>
       )}
     </div>
